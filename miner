@@ -1,0 +1,47 @@
+#!/bin/sh
+
+usage() {
+    echo "Usage: miner start | stop | sync | logs | benchmark"
+    exit 1
+}
+
+if [ $# -lt 1 ]; then
+    usage
+fi
+
+#arweave-miner-ubuntu
+#arweave-miner
+MINER_DIR=arweave-2.4.1
+WEAVE_DIR=$WEAVE_DIR
+
+cd $MINER_DIR
+
+case "$1" in
+start)
+    # - Mining with config file
+    echo stopping currently running miner...
+    ./bin/stop
+    screen -S arweave-miner ./bin/start enable randomx_jit enable randomx_large_pages enable randomx_hardware_aes config_file ../miner-config.json
+    ;;
+stop)
+    # - Stop miner
+    echo stopping miner...
+    ./bin/stop
+    ;;
+sync)
+    # - Initial sync
+    screen -S arweave-miner-sync ./bin/start stage_one_hashing_threads 32 stage_two_hashing_threads 32 io_threads 30 randomx_bulk_hashing_iterations 42 data_dir $WEAVE_DIR sync_jobs 200 peer 188.166.200.45 peer 188.166.192.169 peer 139.59.51.59 peer 138.197.232.192
+    ;;
+logs)
+    ./bin/logs -f
+benchmark)
+    # - Benchmark
+    ./bin/randomx-benchmark --mine --init 48 --threads 48 --jit --largePages
+    ;;
+*)
+    usage
+    ;;
+esac
+
+# - Mining
+#./bin/start mine mining_addr qEoCQQGQiUCcwchvlLWG0Jf8mYFOauViQaR9lycDbJs enable randomx_jit enable randomx_large_pages stage_one_hashing_threads 48 stage_two_hashing_threads 48 io_threads 50 randomx_bulk_hashing_iterations 64 data_dir $WEAVE_DIR peer 188.166.200.45 peer 188.166.192.169 peer 163.47.11.64 peer 139.59.51.59 peer 138.197.232.192
