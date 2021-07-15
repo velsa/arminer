@@ -9,9 +9,10 @@ if [ $# -lt 1 ]; then
     usage
 fi
 
-#arweave-miner-ubuntu
-#arweave-miner
-MINER_DIR=arweave-2.4.1
+#MINER_DIR=arweave-miner-ubuntu
+#MINER_DIR=arweave-miner
+#MINER_DIR=arweave-2.4.1
+MINER_DIR=kronenbourg/pyarmi
 WEAVE_DIR=$WEAVE_DIR
 
 cd $MINER_DIR
@@ -21,7 +22,11 @@ start)
     # - Mining with config file
     echo stopping currently running miner...
     ./bin/stop
-    screen -S arweave-miner ./bin/start enable randomx_jit enable randomx_large_pages enable randomx_hardware_aes config_file ../miner-config.json
+    ./bin/start enable randomx_jit enable randomx_large_pages enable randomx_hardware_aes config_file ../miner-config.json
+    ;;
+start-krn)
+    # - Mining in Kronenbourg pool
+    screen -S arweave-kronenbourg ./pyarmi.py
     ;;
 stop)
     # - Stop miner
@@ -34,6 +39,7 @@ sync)
     ;;
 logs)
     ./bin/logs -f
+    ;;
 benchmark)
     # - Benchmark
     ./bin/randomx-benchmark --mine --init 48 --threads 48 --jit --largePages
